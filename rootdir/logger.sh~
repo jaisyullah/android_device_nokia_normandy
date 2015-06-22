@@ -1,0 +1,12 @@
+mkdir /cache/ahmed
+#Method 1
+dmesg > /cache/ahmed/dmesg.txt
+
+#Method 2
+logcat -d > /cache/ahmede/logcat.txt
+
+#Method 3
+cat /proc/cpuinfo > /cache/ahmed/cpuinfo.txt
+
+#Method 4
+getprop > /cache/ahmed/prop.txt

@@ -1,0 +1,57 @@
+From 4cbbd5509b1cccc6807f18370ff5f53390e6b0d6 Mon Sep 17 00:00:00 2001
+From: Dan Pasanen <dan.pasanen@gmail.com>
+Date: Sun, 14 Dec 2014 22:50:34 -0600
+Subject: [PATCH] install: disable signature checking on eng and userdebug
+ builds
+
+Change-Id: I55b918983be601da32b5cab2fd226e3f3566b93b
+---
+ Android.mk  | 5 +++++
+ install.cpp | 6 ++++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/Android.mk b/Android.mk
+index 7e04a07..2d242e9 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -103,6 +103,11 @@ ifeq ($(TARGET_HAVE_OEMLOCK), true)
+     LOCAL_STATIC_LIBRARIES += liboemlock
+ endif
+ 
++# Disable signature checking on eng and userdebug builds
++ifneq ($(filter eng userdebug,$(TARGET_BUILD_VARIANT)),)
++    LOCAL_CFLAGS += -DDISABLE_SIGCHECK
++endif
++
+ #ifeq ($(TARGET_USERIMAGES_USE_EXT4), true)
+     LOCAL_CFLAGS += -DUSE_EXT4
+     LOCAL_C_INCLUDES += system/extras/ext4_utils system/vold
+diff --git a/install.cpp b/install.cpp
+index a66eacc..939733c 100644
+--- a/install.cpp
++++ b/install.cpp
+@@ -255,10 +255,11 @@ really_install_package(const char *path, int* wipe_cache, bool needs_mount)
+ 
+     set_perf_mode(true);
+ 
+-    ui->Print("Verifying update package...\n");
+-
+     int err;
+ 
++#ifndef DISABLE_SIGCHECK
++    ui->Print("Verifying update package...\n");
++
+     // Because we mmap() the update file which is backed by FUSE, we get
+     // SIGBUS when the host aborts the transfer.  We handle this by using
+     // setjmp/longjmp.
+@@ -279,6 +280,7 @@ really_install_package(const char *path, int* wipe_cache, bool needs_mount)
+         ret = INSTALL_CORRUPT;
+         goto out;
+     }
++#endif
+ 
+     /* Try to open the package.
+      */
+-- 
+2.1.4
+
