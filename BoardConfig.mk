@@ -1,11 +1,11 @@
 USE_CAMERA_STUB := true
-#LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
-#TARGET_SPECIFIC_HEADER_PATH := device/nokia/normandy/include
+TARGET_SPECIFIC_HEADER_PATH := device/nokia/normandy/include
 
 # inherit from the proprietary version
 -include vendor/nokia/normandy/BoardConfigVendor.mk
 
 TARGET_NO_BOOTLOADER := true
+TARGET_NO_RADIOIMAGE := true
 
 # Arch related defines and optimizations
 TARGET_ARCH := arm
@@ -30,7 +30,11 @@ BOARD_USES_GENERIC_AUDIO := true
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
 
-# Optimisations
+# Qualcomm hardware
+COMMON_GLOBAL_CFLAGS += -DUSE_MDP3
+COMMON_GLOBAL_CFLAGS += -DLPA_DEFAULT_BUFFER_SIZE=480
+
+# Optimizations
 TARGET_AVOID_DRAW_TEXTURE_EXTENSION := true
 TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
 ARCH_ARM_HIGH_OPTIMIZATION := true
@@ -44,7 +48,6 @@ WITH_ART_SMALL_MODE := true
 #TARGET_PREBUILT_KERNEL := device/nokia/normandy/kernel
 TARGET_KERNEL_SOURCE := kernel/nokia/normandy
 TARGET_KERNEL_CONFIG := normandy_lulz_defconfig
-#TARGET_KERNEL_CUSTOM_TOOLCHAIN := ~/cm12.1/prebuilts/gcc/linux-x86/arm/linaro-4.9/bin
 KERNEL_TOOLCHAIN_PREFIX := arm-linux-gnueabihf-
 
 BOARD_HAS_NO_SELECT_BUTTON := true
@@ -66,8 +69,10 @@ BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_USES_UNCOMPRESSED_KERNEL := false
 
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom loglevel=1 vmalloc=200M androidboot.selinux=permissive
-BOARD_EGL_CFG := device/nokia/normandy/config/egl.cfg
 ARCH_ARM_HAVE_TLS_REGISTER := true
+
+# RIL
+BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
 
 # fix this up by examining /proc/mtd on a running device
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x00A00000
@@ -78,9 +83,9 @@ BOARD_PERSISTIMAGE_PARTITION_SIZE := 10485760
 BOARD_CACHEIMAGE_PARTITION_SIZE := 41943040
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 
-#BOARD_USES_QCOM_HARDWARE := true
-#TARGET_USES_QCOM_BSP := true
-#COMMON_GLOBAL_CFLAGS += -DQCOM_FM_ENABLED
+BOARD_USES_QCOM_HARDWARE := true
+TARGET_USES_QCOM_BSP := true
+COMMON_GLOBAL_CFLAGS += -DQCOM_FM_ENABLED
 
 # Storage / Sharing
 BOARD_VOLD_MAX_PARTITIONS := 35
@@ -97,29 +102,50 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nokia/normandy/bluetooth
 
 # Camera
+USE_DEVICE_SPECIFIC_CAMERA := true
 COMMON_GLOBAL_CFLAGS += -DMR0_CAMERA_BLOB -DNEEDS_VECTORIMPL_SYMBOLS
+
+# Audio
+BOARD_USES_LEGACY_ALSA_AUDIO := true
+
+# FM
+AUDIO_FEATURE_ENABLED_FM := true
+
+# GPS
+BOARD_USES_QCOM_GPS := true
+BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
+BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
 
 # Dalvik
 TARGET_ARCH_LOWMEM := true
 
 # Display
-USE_OPENGL_RENDERER := true
-#TARGET_QCOM_DISPLAY_VARIANT := legacy
+TARGET_QCOM_DISPLAY_VARIANT := legacy
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
+BOARD_EGL_CFG := device/nokia/normandy/config/egl.cfg
 BOARD_EGL_WORKAROUND_BUG_10194508 := true
+TARGET_DISPLAY_USE_RETIRE_FENCE := true
+USE_OPENGL_RENDERER := true
+HWUI_COMPILE_FOR_PERF := true
 BOARD_USE_MHEAP_SCREENSHOT := true
+TARGET_USES_C2D_COMPOSITION :=true
+
+# Hardware
+BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
+
+# Lights
+#TARGET_PROVIDES_LIBLIGHT := true
+
+# GPS
+TARGET_NO_RPC := false
+BOARD_USES_QCOM_GPS := true
+BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
+BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := default
 
 # Webkit
 ENABLE_WEBGL := true
 PRODUCT_PREBUILT_WEBVIEWCHROMIUM := yes
 TARGET_FORCE_CPU_UPLOAD := true
-
-# SELinux
-BOARD_SEPOLICY_DIRS += device/nokia/normandy/sepolicy
-
-BOARD_SEPOLICY_UNION += \
-    file_contexts \
-    file.te
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := normandy,msm8625
@@ -140,4 +166,25 @@ USE_MINIKIN := true
 #low-ram
 MALLOC_IMPL := dlmalloc
 TARGET_BOOTANIMATION_TEXTURE_CACHE := false
+
+# WLAN
+TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
+BOARD_HAS_ATH_WLAN          := true
+BOARD_WLAN_DEVICE := ath6kl
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_ath6kl
+BOARD_HOSTAPD_DRIVER        := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_ath6kl
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+HOSTAPD_VERSION             := VER_0_8_X
+WIFI_EXT_MODULE_PATH        := "/system/lib/modules/cfg80211.ko"
+WIFI_EXT_MODULE_NAME        := "cfg80211"
+WIFI_EXT_MODULE_ARG         := ""
+WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
+WIFI_DRIVER_MODULE_NAME     := "wlan"
+WIFI_DRIVER_MODULE_ARG      := ""
+WIFI_TEST_INTERFACE         := "sta"
+WIFI_DRIVER_FW_PATH_STA     := "sta"
+WIFI_DRIVER_FW_PATH_AP      := "ap"
+WIFI_DRIVER_FW_PATH_P2P     := "p2p"
 

@@ -26,6 +26,9 @@ PRODUCT_DEVICE := normandy
 LOCAL_PATH := device/nokia/normandy
 
 PRODUCT_LOCALES := ar_EG
+PRODUCT_LOCALES += en_US
+PRODUCT_LOCALES += en_UK
+PRODUCT_LOCALES += fr_FR
 PRODUCT_LOCALES += hdpi
 PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
@@ -52,27 +55,16 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml
 
-# Files
+#Root
+PRODUCT_PACKAGES += \
+   fstab.qcom \
+   ueventd.qcom.rc \
+   init.target.rc \
+   init.qcom.usb.rc \
+   init.qcom.rc
+
 PRODUCT_COPY_FILES += \
-    device/nokia/normandy/rootdir/init.qcom.rc:root/init.qcom.rc \
-    device/nokia/normandy/rootdir/init.performance_profiles.rc:root/init.performance_profiles.rc \
-    device/nokia/normandy/rootdir/init.qcom.usb.rc:root/init.qcom.usb.rc \
-    device/nokia/normandy/rootdir/ueventd.qcom.rc:root/ueventd.qcom.rc \
-    device/nokia/normandy/rootdir/fstab.qcom:root/fstab.qcom \
-    device/nokia/normandy/rootdir/init.qcom.rc:root/init.qcom.rc \
-    device/nokia/normandy/rootdir/sh/init.qcom.class_core.sh:root/init.qcom.class_core.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.class_main.sh:root/init.qcom.class_main.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.early_boot.sh:root/init.qcom.early_boot.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.post_boot.sh:root/init.qcom.post_boot.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.ril.sh:root/init.qcom.ril.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.sh:root/init.qcom.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.unicorn-dpi.sh:root/init.qcom.unicorn-dpi.sh \
-    device/nokia/normandy/rootdir/sh/init.qcom.usb.sh:root/init.qcom.usb.sh \
-    device/nokia/normandy/etc/init.qcom.fm.sh:system/etc/init.qcom.fm.sh \
-    device/nokia/normandy/etc/init.qcom.thermald_conf.sh:system/etc/init.qcom.thermald_conf.sh \
-    device/nokia/normandy/etc/thermald.conf:system/etc/thermald.conf \
-    device/nokia/normandy/etc/thermald-8x25-msm1-pmic_therm.conf:system/etc/thermald-8x25-msm1-pmic_therm.conf \
-    device/nokia/normandy/etc/thermald-LA-M1.conf:system/etc/thermald-LA-M1.conf
+   $(LOCAL_PATH)/rootdir/cmdline:root/cmdline \
 
 #Charger
 PRODUCT_COPY_FILES += \
@@ -122,6 +114,14 @@ PRODUCT_PACKAGES += \
     libqdutils \
     libqdMetaData
 
+# GPS
+PRODUCT_PACKAGES += \
+    gps.default \
+    libgps.utils \
+    libloc_adapter \
+    libloc_eng \
+    libloc_api-rpc-qc
+
 # Keys
 PRODUCT_PACKAGES += \
     7x27a_kp.kcm \
@@ -147,10 +147,6 @@ PRODUCT_PACKAGES += \
     libcnefeatureconfig \
     libnl_2 \
     lights.msm7x27a
-
-### Add system daemons
-PRODUCT_PACKAGES += \
-    rild
 
 # OMX
 PRODUCT_PACKAGES += \
@@ -194,22 +190,7 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
     ro.allow.mock.location=0 \
     ro.debuggable=1 \
     persist.sys.usb.config=adb \
-    ro.zygote=zygote32 \
-    dalvik.vm.dex2oat-Xms=64m \
-    dalvik.vm.dex2oat-Xmx=512m \
-    dalvik.vm.image-dex2oat-Xms=64m \
-    dalvik.vm.image-dex2oat-Xmx=64m \
-    ro.dalvik.vm.native.bridge=0
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    config.disable_atlas=true \
-    dalvik.vm.jit.codecachesize=0 \
-    persist.sys.force_highendgfx=true \
-    ro.config.low_ram=true \
-    ro.config.max_starting_bg=8 \
-    ro.sys.fw.bg_apps_limit=16 \
-    dalvik.vm.dex2oat-filter=interpret-only \
-    dalvik.vm.image-dex2oat-filter=speed
+    ro.zygote=zygote32
 
 # Extras
 PRODUCT_PACKAGES += \
@@ -217,4 +198,98 @@ PRODUCT_PACKAGES += \
     libcyanogen-dsp \
     Superuser \
     su \
-    busybox
+    dump.f2fs \
+    fibmap.f2fs \
+    fsck.f2fs \
+    mkfs.f2fs \
+    dexopt \
+    dex2oat \
+    
+# FM Radio
+PRODUCT_PACKAGES += \
+    FM2 \
+    FMRecord \
+    FMRadio \
+    libqcomfm_jni \
+    qcom.fmradio
+
+PRODUCT_PACKAGES += \
+    llvm \
+    rild \
+    dualsimswitch
+
+#Props
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.composition.type=dyn \
+    debug.hwc.dynThreshold=1.9 \
+    persist.hwc.mdpcomp.enable=false \
+    debug.mdpcomp.logs=0 \
+    debug.gralloc.map_fb_memory=1 \
+    debug.hwc.fakevsync=1 \
+    ro.sf.lcd_density=240
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.usb.config=mtp,adb \
+    ro.vold.umsdirtyratio=50
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    rild.libargs=-d/dev/smd0 \
+    ro.telephony.call_ring.delay=100 \
+    ro.telephony.call_ring.multiple=false
+
+# Common properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    com.qc.hardware=true \
+    telephony.lteOnGsmDevice=0 \
+    ro.telephony.call_ring.delay=3000 \
+    ro.telephony.ril.v3=skippinpukcount,qcomdsds \
+    persist.multisim.config=dsds \
+    persist.radio.multisim.config=dsds \
+    ro.multi.rild=true \
+    persist.sys.usb.config=mass_storage,adb \
+    wlan.driver.ath=1 \
+    ro.config.low_ram=true \
+    dalvik.vm.heapgrowthlimit=52m \
+    dalvik.vm.heapsize=128m \
+    ro.qualcomm.bluetooth.ftp=true \
+    ro.bluetooth.remote.autoconnect=true \
+    ro.bluetooth.request.master=true \
+    ro.bt.bdaddr_path=/data/misc/bluedroid/bdaddr \
+    ro.qualcomm.bluetooth.dun=true
+
+#Low-Ram
+PRODUCT_PROPERTY_OVERRIDES += \
+    config.disable_atlas=true \
+    dalvik.vm.jit.codecachesize=0 \
+    persist.sys.force_highendgfx=true \
+    ro.config.max_starting_bg=8 \
+    ro.sys.fw.bg_apps_limit=16
+
+# Stagefright
+PRODUCT_PROPERTY_OVERRIDES += \
+   media.stagefright.enable-player=true \
+   media.stagefright.enable-meta=false \
+   media.stagefright.enable-scan=true \
+   media.stagefright.enable-http=true \
+   media.stagefright.enable-fma2dp=true \
+   media.stagefright.enable-aac=true \
+   media.stagefright.enable-qcp=true
+
+PRODUCT_PROPERTY_OVERRIDES += \
+   mm.enable.smoothstreaming=true
+
+# Use ART small mode
+PRODUCT_PROPERTY_OVERRIDES += \
+   dalvik.vm.dex2oat-filter=interpret-only \
+   dalvik.vm.image-dex2oat-filter=speed
+
+# ART properties
+ADDITIONAL_DEFAULT_PROPERTIES += \
+   dalvik.vm.dex2oat-Xms=8m \
+   dalvik.vm.dex2oat-Xmx=96m \
+   dalvik.vm.image-dex2oat-Xms=48m \
+   dalvik.vm.image-dex2oat-Xmx=48m
+
+#Additional
+PRODUCT_PACKAGES += \
+    LegacyCamera

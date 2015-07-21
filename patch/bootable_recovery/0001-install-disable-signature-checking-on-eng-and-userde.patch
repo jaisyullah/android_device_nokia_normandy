@@ -1,4 +1,4 @@
-From 4cbbd5509b1cccc6807f18370ff5f53390e6b0d6 Mon Sep 17 00:00:00 2001
+From c72603ec436c523f50d0a93f503e3d1423bd41af Mon Sep 17 00:00:00 2001
 From: Dan Pasanen <dan.pasanen@gmail.com>
 Date: Sun, 14 Dec 2014 22:50:34 -0600
 Subject: [PATCH] install: disable signature checking on eng and userdebug
@@ -11,7 +11,7 @@ Change-Id: I55b918983be601da32b5cab2fd226e3f3566b93b
  2 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/Android.mk b/Android.mk
-index 7e04a07..2d242e9 100644
+index 65919f3..fc4eef8 100644
 --- a/Android.mk
 +++ b/Android.mk
 @@ -103,6 +103,11 @@ ifeq ($(TARGET_HAVE_OEMLOCK), true)
@@ -53,5 +53,5 @@ index a66eacc..939733c 100644
      /* Try to open the package.
       */
 -- 
-2.1.4
+1.9.1
 
