@@ -164,11 +164,13 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
+    wpa_supplicant \
     libwpa_client \
     hostapd \
     dhcpcd.conf \
     p2p_supplicant_overlay.conf \
-    wpa_supplicant_overlay.conf
+    wpa_supplicant_overlay.conf \
+    wpa_supplicant.conf
 
 # Newer camera API isn't supported.
 PRODUCT_PROPERTY_OVERRIDES += \
