@@ -29,6 +29,13 @@ BOARD_USES_ADRENO_200 := true
 BOARD_USES_GENERIC_AUDIO := true
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
+COMMON_GLOBAL_CFLAGS += -DQCOM_DIRECTTRACK
+COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
+COMMON_GLOBAL_CFLAGS += -DQCOM_NO_SECURE_PLAYBACK
+COMMON_GLOBAL_CFLAGS += -DNO_UPDATE_PREVIEW
+COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB
+COMMON_GLOBAL_CFLAGS += -DQCOM_BSP_LEGACY
+COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
 
 # Qualcomm hardware
 COMMON_GLOBAL_CFLAGS += -DUSE_MDP3
@@ -45,10 +52,26 @@ BOARD_WANTS_EMMC_BOOT := true
 
 WITH_ART_SMALL_MODE := true
 
+BOARD_PROVIDES_LIBRIL := true
+SIM_COUNT := 2
+
 #TARGET_PREBUILT_KERNEL := device/nokia/normandy/kernel
 TARGET_KERNEL_SOURCE := kernel/nokia/normandy
-TARGET_KERNEL_CONFIG := normandy_lulz_defconfig
-KERNEL_TOOLCHAIN_PREFIX := arm-linux-gnueabihf-
+TARGET_KERNEL_CONFIG := normandy_selinux_defconfig
+KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
+
+KERNEL_EXTERNAL_MODULES:
+	mkdir -p $(KERNEL_MODULES_OUT)/ath6kl
+	rm -rf $(TARGET_OUT_INTERMEDIATES)/compat-wireless
+	cp -a device/nokia/normandy/wifi $(TARGET_OUT_INTERMEDIATES)/
+	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/wifi KLIB=$(KERNEL_OUT) KLIB_BUILD=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" install-modules
+	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/wifi/net/wireless/cfg80211.ko $(KERNEL_MODULES_OUT)/ath6kl/cfg80211.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/wifi/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/ath6kl/wlan.ko
+	ln -sf /system/lib/modules/ath6kl/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
+	ln -sf /system/lib/modules/ath6kl/ath6kl_sdio.ko $(KERNEL_MODULES_OUT)/wlan.ko
+
+TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
 BOARD_HAS_NO_SELECT_BUTTON := true
 
@@ -63,16 +86,13 @@ BOARD_KERNEL_BCHECC_SPARESIZE := 160
 BOARD_KERNEL_2KSPARESIZE := 64
 
 TARGET_USERIMAGES_USE_EXT4 := true
-#TARGET_USERIMAGES_USE_F2FS := true
+TARGET_USERIMAGES_USE_F2FS := true
 
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_USES_UNCOMPRESSED_KERNEL := false
 
 BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom loglevel=1 vmalloc=200M androidboot.selinux=permissive
 ARCH_ARM_HAVE_TLS_REGISTER := true
-
-# RIL
-BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
 
 # fix this up by examining /proc/mtd on a running device
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x00A00000
@@ -104,6 +124,10 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nokia/normandy/bluetooth
 # Camera
 USE_DEVICE_SPECIFIC_CAMERA := true
 COMMON_GLOBAL_CFLAGS += -DMR0_CAMERA_BLOB -DNEEDS_VECTORIMPL_SYMBOLS
+BOARD_NEEDS_MEMORYHEAPPMEM := true
+CAMERA_USES_SURFACEFLINGER_CLIENT_STUB := true
+BOARD_USES_QCOM_LEGACY_CAM_PARAMS := true
+BOARD_USES_PMEM_ADSP := true
 
 # Audio
 BOARD_USES_LEGACY_ALSA_AUDIO := true
@@ -134,7 +158,17 @@ TARGET_USES_C2D_COMPOSITION :=true
 BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
 
 # Lights
-#TARGET_PROVIDES_LIBLIGHT := true
+TARGET_PROVIDES_LIBLIGHT := true
+
+# Override healthd HAL
+BOARD_HAL_STATIC_LIBRARIES := libhealthd.msm7x27a
+
+# SELinux
+include device/qcom/sepolicy/sepolicy.mk
+
+# RIL 
+#BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril
+#BOARD_RIL_NO_CELLINFOLIST := true
 
 # GPS
 TARGET_NO_RPC := false
@@ -161,14 +195,16 @@ DEVICE_RESOLUTION := 480x800
 #BLOCK_BASED_OTA := false
 
 # Enable Minikin text layout engine (will be the default soon)
-USE_MINIKIN := true
+#USE_MINIKIN := true
+
+WITH_DEXPREOPT := true
+DONT_DEXPREOPT_PREBUILTS := true
 
 #low-ram
 MALLOC_IMPL := dlmalloc
 TARGET_BOOTANIMATION_TEXTURE_CACHE := false
 
 # WLAN
-TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
 BOARD_HAS_ATH_WLAN          := true
 BOARD_WLAN_DEVICE := ath6kl
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
@@ -187,4 +223,3 @@ WIFI_TEST_INTERFACE         := "sta"
 WIFI_DRIVER_FW_PATH_STA     := "sta"
 WIFI_DRIVER_FW_PATH_AP      := "ap"
 WIFI_DRIVER_FW_PATH_P2P     := "p2p"
-

@@ -145,8 +145,20 @@ PRODUCT_PACKAGES += \
     charger \
     charger_res_images \
     libcnefeatureconfig \
-    libnl_2 \
-    lights.msm7x27a
+    libnl_2
+
+# Lights
+PRODUCT_PACKAGES += \
+   lights.msm7x27a
+
+#Health HAL
+PRODUCT_PACKAGES += \
+    libhealthd.msm7x27a
+
+# Camera
+PRODUCT_PACKAGES += \
+    camera.msm7x27a \
+    libsurfaceflinger_client
 
 # OMX
 PRODUCT_PACKAGES += \
@@ -164,20 +176,17 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
-    wpa_supplicant \
     libwpa_client \
     hostapd \
     dhcpcd.conf \
     p2p_supplicant_overlay.conf \
     wpa_supplicant_overlay.conf \
-    wpa_supplicant.conf
+    wpa_supplicant.conf \
+    wpa_supplicant
 
 # Newer camera API isn't supported.
 PRODUCT_PROPERTY_OVERRIDES += \
    camera2.portability.force_api=1
-
-PRODUCT_PACKAGES += \
-    camera.msm7x27a
 
 # QC Perf
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -206,6 +215,7 @@ PRODUCT_PACKAGES += \
     mkfs.f2fs \
     dexopt \
     dex2oat \
+    librpc
     
 # FM Radio
 PRODUCT_PACKAGES += \
@@ -217,8 +227,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     llvm \
-    rild \
-    dualsimswitch
+    libril \
 
 #Props
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -257,7 +266,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.bluetooth.remote.autoconnect=true \
     ro.bluetooth.request.master=true \
     ro.bt.bdaddr_path=/data/misc/bluedroid/bdaddr \
-    ro.qualcomm.bluetooth.dun=true
+    ro.qualcomm.bluetooth.dun=true \
+    ro.telephony.ril_class=HuaweiRIL \
+    ro.telephony.ril.config=datacallapn,signalstrength
 
 #Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -294,4 +305,5 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 
 #Additional
 PRODUCT_PACKAGES += \
-    LegacyCamera
+    LegacyCamera \
+    Stk
