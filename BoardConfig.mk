@@ -1,4 +1,7 @@
+ANDROID_SIM_COUNT_2 :=
+
 USE_CAMERA_STUB := true
+
 TARGET_SPECIFIC_HEADER_PATH := device/nokia/normandy/include
 
 # inherit from the proprietary version
@@ -41,6 +44,8 @@ COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
 COMMON_GLOBAL_CFLAGS += -DUSE_MDP3
 COMMON_GLOBAL_CFLAGS += -DLPA_DEFAULT_BUFFER_SIZE=480
 
+BOARD_CHARGER_ENABLE_SUSPEND := true
+
 # Optimizations
 TARGET_AVOID_DRAW_TEXTURE_EXTENSION := true
 TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
@@ -52,8 +57,8 @@ BOARD_WANTS_EMMC_BOOT := true
 
 WITH_ART_SMALL_MODE := true
 
-BOARD_PROVIDES_LIBRIL := true
-SIM_COUNT := 2
+#BOARD_PROVIDES_LIBRIL := true
+#SIM_COUNT := 2
 
 #TARGET_PREBUILT_KERNEL := device/nokia/normandy/kernel
 TARGET_KERNEL_SOURCE := kernel/nokia/normandy
@@ -62,14 +67,14 @@ KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
 
 KERNEL_EXTERNAL_MODULES:
 	mkdir -p $(KERNEL_MODULES_OUT)/ath6kl
-	rm -rf $(TARGET_OUT_INTERMEDIATES)/compat-wireless
-	cp -a device/nokia/normandy/wifi $(TARGET_OUT_INTERMEDIATES)/
-	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/wifi KLIB=$(KERNEL_OUT) KLIB_BUILD=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" install-modules
+	rm -rf $(TARGET_OUT_INTERMEDIATES)/compat
+	cp -a device/nokia/normandy/compat $(TARGET_OUT_INTERMEDIATES)/
+	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/compat KLIB=$(KERNEL_OUT) KLIB_BUILD=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" install-modules
 	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
-	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/wifi/net/wireless/cfg80211.ko $(KERNEL_MODULES_OUT)/ath6kl/cfg80211.ko
-	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/wifi/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/ath6kl/wlan.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/compat/net/wireless/cfg80211.ko $(KERNEL_MODULES_OUT)/ath6kl/cfg80211.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/compat/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/ath6kl/ath6kl_core.ko
 	ln -sf /system/lib/modules/ath6kl/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
-	ln -sf /system/lib/modules/ath6kl/ath6kl_sdio.ko $(KERNEL_MODULES_OUT)/wlan.ko
+	ln -sf /system/lib/modules/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/wlan.ko
 
 TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
@@ -130,15 +135,20 @@ BOARD_USES_QCOM_LEGACY_CAM_PARAMS := true
 BOARD_USES_PMEM_ADSP := true
 
 # Audio
+TARGET_PROVIDES_LIBAUDIO := true
 BOARD_USES_LEGACY_ALSA_AUDIO := true
 
 # FM
 AUDIO_FEATURE_ENABLED_FM := true
 
 # GPS
+TARGET_GPS_HAL_PATH := device/nokia/normandy/gps
+#BOARD_USES_QCOM_LIBRPC := true
 BOARD_USES_QCOM_GPS := true
+#BOARD_USES_QCOM_LIBS := true
+BOARD_VENDOR_QCOM_AMSS_VERSION := 6225
+BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := msm7x27a
 BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
-BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
 
 # Dalvik
 TARGET_ARCH_LOWMEM := true
@@ -167,8 +177,7 @@ BOARD_HAL_STATIC_LIBRARIES := libhealthd.msm7x27a
 include device/qcom/sepolicy/sepolicy.mk
 
 # RIL 
-#BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril
-#BOARD_RIL_NO_CELLINFOLIST := true
+BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
 
 # GPS
 TARGET_NO_RPC := false
@@ -192,12 +201,13 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 DEVICE_RESOLUTION := 480x800
 
 # Don't generate block mode update zips
-#BLOCK_BASED_OTA := false
+BLOCK_BASED_OTA := false
 
 # Enable Minikin text layout engine (will be the default soon)
-#USE_MINIKIN := true
+USE_MINIKIN := true
 
 WITH_DEXPREOPT := true
+WITH_DEXPREOPT_PIC := true
 DONT_DEXPREOPT_PREBUILTS := true
 
 #low-ram
@@ -208,18 +218,16 @@ TARGET_BOOTANIMATION_TEXTURE_CACHE := false
 BOARD_HAS_ATH_WLAN          := true
 BOARD_WLAN_DEVICE := ath6kl
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_ath6kl
-BOARD_HOSTAPD_DRIVER        := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_ath6kl
+BOARD_HOSTAPD_DRIVER := NL80211
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
 HOSTAPD_VERSION             := VER_0_8_X
-WIFI_EXT_MODULE_PATH        := "/system/lib/modules/cfg80211.ko"
-WIFI_EXT_MODULE_NAME        := "cfg80211"
-WIFI_EXT_MODULE_ARG         := ""
-WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
-WIFI_DRIVER_MODULE_NAME     := "wlan"
-WIFI_DRIVER_MODULE_ARG      := ""
-WIFI_TEST_INTERFACE         := "sta"
-WIFI_DRIVER_FW_PATH_STA     := "sta"
-WIFI_DRIVER_FW_PATH_AP      := "ap"
-WIFI_DRIVER_FW_PATH_P2P     := "p2p"
+
+WIFI_DRIVER_FW_PATH_AP := "ap"
+WIFI_DRIVER_FW_PATH_STA := "sta"
+WIFI_DRIVER_FW_PATH_P2P := "p2p"
+
+WIFI_DRIVER_MODULE_NAME := "ar6000"
+WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/wlan.ko"

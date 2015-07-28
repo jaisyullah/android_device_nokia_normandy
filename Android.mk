@@ -111,7 +111,6 @@ LOCAL_SRC_FILES    := config/$(LOCAL_MODULE)
 LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
 include $(BUILD_PREBUILT)
 
-
 include $(call all-makefiles-under,$(LOCAL_PATH))
 
 endif
