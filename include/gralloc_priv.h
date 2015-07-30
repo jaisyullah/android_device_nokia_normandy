@@ -63,11 +63,26 @@ enum {
     /* This flag is set for WFD usecase */
     GRALLOC_USAGE_PRIVATE_WFD             =       0x00200000,
 
+    /* Only this buffer content should be displayed on external, even if
+     * other EXTERNAL_ONLY buffers are available. Used during suspend.
+     */
+    GRALLOC_USAGE_PRIVATE_EXTERNAL_BLOCK  =       0x00100000,
+
+    /* Close Caption displayed on an external display only */
+    GRALLOC_USAGE_PRIVATE_EXTERNAL_CC     =       0x00200000,
+
     /* CAMERA heap is a carveout heap for camera, is not secured*/
     GRALLOC_USAGE_PRIVATE_CAMERA_HEAP     =       0x00400000,
 
     /* This flag is used for SECURE display usecase */
     GRALLOC_USAGE_PRIVATE_SECURE_DISPLAY  =       0x00800000,
+
+   /* Use this flag to request content protected buffers. Please note
+     * that this flag is different from the GRALLOC_USAGE_PROTECTED flag
+     * which can be used for buffers that are not secured for DRM
+     * but still need to be protected from screen captures
+     */
+    GRALLOC_USAGE_PRIVATE_CP_BUFFER       =       0x00400000,
 };
 
 enum {
@@ -150,6 +165,10 @@ struct private_handle_t : public native_handle {
             PRIV_FLAGS_NOT_MAPPED         = 0x00001000,
             // Display on external only
             PRIV_FLAGS_EXTERNAL_ONLY      = 0x00002000,
+            // Display only this buffer on external
+            PRIV_FLAGS_EXTERNAL_BLOCK     = 0x00004000,
+            // Display this buffer on external as close caption
+            PRIV_FLAGS_EXTERNAL_CC        = 0x00008000,
             PRIV_FLAGS_VIDEO_ENCODER      = 0x00010000,
             PRIV_FLAGS_CAMERA_WRITE       = 0x00020000,
             PRIV_FLAGS_CAMERA_READ        = 0x00040000,
@@ -163,6 +182,9 @@ struct private_handle_t : public native_handle {
 
         // file-descriptors
         int     fd;
+#ifdef QCOM_BSP_ABI_HACK
+        int     genlockHandle;
+#endif
         int     fd_metadata;          // fd for the meta-data
         // ints
         int     magic;
@@ -179,20 +201,35 @@ struct private_handle_t : public native_handle {
         int     offset_metadata;
         // The gpu address mapped into the mmu.
         int     gpuaddr;
+#ifdef QCOM_BSP_ABI_HACK
+        int     pid;
+#endif
         int     format;
         int     width;
         int     height;
+#ifdef QCOM_BSP_ABI_HACK
+        int     genlockPrivFd;
+#endif
         int     base_metadata;
 
 #ifdef __cplusplus
+#ifdef QCOM_BSP_ABI_HACK
+        static const int sNumInts = 14;
+        static const int sNumFds = 3;
+#else
         static const int sNumInts = 12;
         static const int sNumFds = 2;
+#endif
         static const int sMagic = 'gmsm';
 
         private_handle_t(int fd, int size, int flags, int bufferType,
                          int format,int width, int height, int eFd = -1,
                          int eOffset = 0, int eBase = 0) :
-            fd(fd), fd_metadata(eFd), magic(sMagic),
+            fd(fd),
+#ifdef QCOM_BSP_ABI_HACK
+            genlockHandle(0),
+#endif
+            fd_metadata(eFd), magic(sMagic),
             flags(flags),
 #ifdef QCOM_BSP_CAMERA_ABI_HACK
             bufferType(bufferType),
@@ -202,7 +239,13 @@ struct private_handle_t : public native_handle {
             bufferType(bufferType),
 #endif
             base(0), offset_metadata(eOffset), gpuaddr(0),
+#ifdef QCOM_BSP_ABI_HACK
+            pid(getpid()),
+#endif
             format(format), width(width), height(height),
+#ifdef QCOM_BSP_ABI_HACK
+            genlockPrivFd(0),
+#endif
             base_metadata(eBase)
         {
             version = sizeof(native_handle);
