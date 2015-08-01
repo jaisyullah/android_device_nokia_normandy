@@ -247,20 +247,24 @@ on property:init.svc.wpa_supplicant=stopped
 on property:bluetooth.isEnabled=true
     write /sys/class/bluetooth/hci0/idle_timeout 7000
 
-#service qcom-c_core-sh /system/bin/sh /init.qcom.class_core.sh
-#    class core
-#    user root
-#    oneshot
+service qcom-c_core-sh /system/bin/sh /init.qcom.class_core.sh
+    class core
+    user root
+    oneshot
 
 #service block_tuning-sh /system/bin/sh /init.block_tuning.sh
 #    class core
 #    user root
 #    oneshot
 
-#service qcom-c_main-sh /system/bin/sh /init.qcom.class_main.sh
-#    class main
-#    user root
-#    oneshot
+service qcom-c_main-sh /system/bin/sh /init.qcom.class_main.sh
+    class main
+    user root
+    oneshot
+
+service atserver /system/bin/atserver
+class core
+oneshot
 
 on property:vold.decrypt=trigger_restart_framework
     start config_bluetooth
@@ -463,11 +467,11 @@ service qcom-post-boot /system/bin/sh /system/etc/init.qcom.post_boot.sh
     disabled
     oneshot
 
-#service wifi-sdio-on /system/bin/sh /system/etc/init.qcom.sdio.sh
-#    class late_start
-#    group wifi inet
-#    disabled
-#    oneshot
+service wifi-sdio-on /system/bin/sh /system/etc/init.qcom.sdio.sh
+    class late_start
+    group wifi inet
+    disabled
+    oneshot
 
 
 on property:sys.boot_completed=1

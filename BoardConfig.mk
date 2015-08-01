@@ -68,7 +68,9 @@ KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
 #	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/compat/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/ath6kl/ath6kl_core.ko
 #	ln -sf /system/lib/modules/ath6kl/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
 KERNEL_EXTERNAL_MODULES:
+	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
 	ln -sf /system/lib/modules/ath6kl/ath6kl_sdio.ko $(KERNEL_MODULES_OUT)/wlan.ko
+	cp device/nokia/normandy/nx/other/lib/modules/cfg80211.ko $(TARGET_OUT)/lib/modules
 
 TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
@@ -125,9 +127,10 @@ COMMON_GLOBAL_CFLAGS += -DMR0_CAMERA_BLOB -DNEEDS_VECTORIMPL_SYMBOLS
 USE_DEVICE_SPECIFIC_CAMERA := true
 USE_CAMERA_STUB := true
 
-# Audio
-TARGET_PROVIDES_LIBAUDIO := true
+# audio 
+TARGET_QCOM_AUDIO_VARIANT := caf
 BOARD_USES_LEGACY_ALSA_AUDIO := true
+TARGET_HAS_QACT := true
 
 # FM
 AUDIO_FEATURE_ENABLED_FM := true
@@ -158,16 +161,13 @@ TARGET_DOESNT_USE_FENCE_SYNC := true
 BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
 
 # Lights
-TARGET_PROVIDES_LIBLIGHT := true
-
-# Override healthd HAL
-BOARD_HAL_STATIC_LIBRARIES := libhealthd.msm7x27a
+#TARGET_PROVIDES_LIBLIGHT := true
 
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 
 # RIL 
-BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
+#BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
 
 # GPS
 TARGET_NO_RPC := false
@@ -191,7 +191,7 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 DEVICE_RESOLUTION := 480x800
 
 # Don't generate block mode update zips
-BLOCK_BASED_OTA := false
+#BLOCK_BASED_OTA := false
 
 # Enable Minikin text layout engine (will be the default soon)
 USE_MINIKIN := true

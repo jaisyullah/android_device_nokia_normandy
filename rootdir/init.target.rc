@@ -54,11 +54,6 @@ service ril-qmi /system/bin/sh /init.qcom.ril.sh
     user root
     oneshot
 
-service fixup /system/bin/sh /system/etc/qcom.fixup.sh
-    class main
-    user root
-    oneshot
-
 service nvbk_storage /system/bin/nvbk_storage
     class late_start
     user root
@@ -175,8 +170,8 @@ service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
 	user root
 	disabled
 
-on property:sys.radio.shutdown=true
-   exec /system/bin/sh /system/etc/init.qcom.efs.sync.sh
+#on property:sys.radio.shutdown=true
+#   exec /system/bin/sh /system/etc/init.qcom.efs.sync.sh
 
 service gpu_dcvsd /system/bin/gpu_dcvsd
     class late_start

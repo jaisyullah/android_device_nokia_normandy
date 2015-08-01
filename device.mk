@@ -148,15 +148,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
    lights.msm7x27a
 
-#Health HAL
-PRODUCT_PACKAGES += \
-    libhealthd.msm7x27a
-
-# Camera
-PRODUCT_PACKAGES += \
-    camera.msm7x27a \
-    libsurfaceflinger_client
-
 # OMX
 PRODUCT_PACKAGES += \
     libstagefrighthw \
@@ -179,10 +170,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PROPERTY_OVERRIDES += \
    camera2.portability.force_api=1
 
-# QC Perf
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so
-
 # Extras
 PRODUCT_PACKAGES += \
     DSPManager \
@@ -199,7 +186,8 @@ PRODUCT_PACKAGES += \
     
 # FM Radio
 PRODUCT_PACKAGES += \
-    FMRadio \
+    FM2 \
+    FMRecord \
     libqcomfm_jni \
     qcom.fmradio
 
