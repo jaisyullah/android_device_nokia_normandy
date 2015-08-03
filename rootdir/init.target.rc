@@ -31,6 +31,13 @@ on early-boot
     start version-set
 
 on init
+    # framebuffer pls... :(
+    write /sys/module/msm_fb/parameters/align_buffer 1
+
+service rmt_storage /system/bin/rmt_storage /dev/block/mmcblk0p17 /dev/block/mmcblk0p18 /dev/block/mmcblk0p15 /dev/block/mmcblk0p21
+    class core
+
+
     mkdir /variant 0555 system system
     mkdir /preload 0555 system system
 
@@ -41,6 +48,48 @@ on init
     # framebuffer pls... :(
     write /sys/module/msm_fb/parameters/align_buffer 1
 
+service wlan_detect /system/bin/wlan_detect
+    class main
+    user root
+    group root
+    oneshot
+
+service akm8963 /system/bin/akmd8963
+    class main
+    disabled
+    oneshot
+
+service hostapd /system/bin/hostapd -dddd /data/misc/wifi/hostapd.conf
+    class late_start
+    user root
+    group root
+    oneshot
+    disabled
+
+
+service thermald /system/bin/thermald
+    class late_start
+    user root
+    group root
+
+on property:persist.sys.thermal.monitor=1
+    start thermald
+
+on property:persist.sys.thermal.monitor=0
+    stop thermald
+
+service gpu_dcvsd /system/bin/gpu_dcvsd
+    class late_start
+    user root
+    oneshot
+
+service fm_dl /system/bin/sh /system/etc/init.qcom.fm.sh
+    class late_start
+    user root
+    group system qcom_oncrpc
+    disabled
+    oneshot
+
 on post-fs
     exec /system/bin/sh /system/etc/init.qcom.thermald_conf.sh
 
@@ -49,10 +98,10 @@ on post-fs
 
     chmod 2770 /data/radio
 
-service ril-qmi /system/bin/sh /init.qcom.ril.sh
-    class main
-    user root
-    oneshot
+#service ril-qmi /system/bin/sh /init.qcom.ril.sh
+#    class main
+#    user root
+#    oneshot
 
 service nvbk_storage /system/bin/nvbk_storage
     class late_start
@@ -159,12 +208,6 @@ service qcamerasvr /system/bin/mm-qcamera-daemon
         user camera
         group camera system inet audio
 
-service thermald /system/bin/thermald
-   class late_start
-   user root
-   group root
-   disabled
-
 service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
         class late_start
 	user root
@@ -173,10 +216,6 @@ service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
 #on property:sys.radio.shutdown=true
 #   exec /system/bin/sh /system/etc/init.qcom.efs.sync.sh
 
-service gpu_dcvsd /system/bin/gpu_dcvsd
-    class late_start
-    user root
-    oneshot
 
 service qosmgrd /system/bin/qosmgr /system/etc/qosmgr_rules.xml
     user system

@@ -149,7 +149,6 @@ TARGET_ARCH_LOWMEM := true
 
 # Display
 BOARD_EGL_CFG := device/nokia/normandy/config/egl.cfg
-
 USE_OPENGL_RENDERER := true
 TARGET_QCOM_DISPLAY_VARIANT := legacy
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true                                           
@@ -163,17 +162,22 @@ BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
 # Lights
 #TARGET_PROVIDES_LIBLIGHT := true
 
+# Radio
+TARGET_NEEDS_NON_PIE_SUPPORT := true
+BOARD_PROVIDES_LIBRIL := true
+SIM_COUNT := 2
+
+# Sensors
+SOMC_CFG_SENSORS := true
+SOMC_CFG_SENSORS_COMPASS_AK8975 := yes
+SOMC_CFG_SENSORS_LIGHT_AS3676 := yes
+SOMC_CFG_SENSORS_LIGHT_AS3676_PATH := "/sys/devices/i2c-0/0-0040"
+
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 
 # RIL 
 #BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
-
-# GPS
-TARGET_NO_RPC := false
-BOARD_USES_QCOM_GPS := true
-BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
-BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := default
 
 # Webkit
 ENABLE_WEBGL := true
@@ -191,13 +195,13 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 DEVICE_RESOLUTION := 480x800
 
 # Don't generate block mode update zips
-#BLOCK_BASED_OTA := false
+BLOCK_BASED_OTA := false
 
 # Enable Minikin text layout engine (will be the default soon)
 USE_MINIKIN := true
 
 WITH_DEXPREOPT := true
-WITH_DEXPREOPT_PIC := true
+#WITH_DEXPREOPT_PIC := true
 DONT_DEXPREOPT_PREBUILTS := true
 
 #low-ram
@@ -213,10 +217,11 @@ BOARD_HOSTAPD_DRIVER        := NL80211
 BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_ath6kl
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
 HOSTAPD_VERSION             := VER_0_8_X
+TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
 WIFI_EXT_MODULE_PATH        := "/system/lib/modules/cfg80211.ko"
 WIFI_EXT_MODULE_NAME        := "cfg80211"
 WIFI_EXT_MODULE_ARG         := ""
-WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
+WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/ath6kl/ath6kl_sdio.ko"
 WIFI_DRIVER_MODULE_NAME     := "wlan"
 WIFI_DRIVER_MODULE_ARG      := ""
 WIFI_TEST_INTERFACE         := "sta"

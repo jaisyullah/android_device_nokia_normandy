@@ -11,17 +11,11 @@ ifneq ($(filter msm7x27a,$(TARGET_BOARD_PLATFORM)),)
     $(shell [ -f $(TARGET_OUT)/etc/init.d ] || mkdir -p $(TARGET_OUT)/etc/init.d)
     $(shell cp $(LOCAL_PATH)/scripts/* $(TARGET_OUT)/etc/init.d/)
 
-#Fixing Adreno2xx Drivers
-    $(shell [ -f $(TARGET_OUT)/lib ] || mkdir -p $(TARGET_OUT)/lib)
-    $(shell cp -r $(LOCAL_PATH)/adreno/* $(TARGET_OUT)/lib/)
-
 #Copying other files
     $(shell [ -f $(TARGET_OUT)/bin ] || mkdir -p $(TARGET_OUT)/bin)
     $(shell cp $(LOCAL_PATH)/other/bin/* $(TARGET_OUT)/bin/)
     $(shell [ -f $(TARGET_OUT)/lib ] || mkdir -p $(TARGET_OUT)/lib)
     $(shell cp -r $(LOCAL_PATH)/other/lib/* $(TARGET_OUT)/lib/)
-    $(shell [ -f $(TARGET_OUT)/lib/bluez-plugin ] || mkdir -p $(TARGET_OUT)/lib/bluez-plugin)
-    $(shell cp $(LOCAL_PATH)/other/bluez-plugin/* $(TARGET_OUT)/lib/bluez-plugin/)
     $(shell [ -f $(PRODUCT_OUT)/root ] || mkdir -p $(PRODUCT_OUT)/root)
     $(shell cp -r $(LOCAL_PATH)/other/root/* $(PRODUCT_OUT)/root/)
 

@@ -13,24 +13,27 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
     dalvik.vm.image-dex2oat-Xmx=48m
 
 #Nokia X configs
+
+# Qualcomm
 PRODUCT_PROPERTY_OVERRIDES += \
-    telephony.lteOnGsmDevice=0 \
-    ro.telephony.ril.v3=skippinpukcount,qcomdsds \
-    ro.multi.rild=true \
-    ro.telephony.default_network=3 \
-    ro.telephony.ril.v3=qcomdsds \
-    persist.dsds.enabled=true \
-    persist.multisim.config=dsds \
-    persist.radio.multisim.config=dsds \
-    ro.telephony.call_ring.delay=3000 \
-    ro.telephony.call_ring.multiple=false \
-    rild.libpath=/system/lib/libril-qc-qmi-1.so \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so \
-    rild.libargs=-d /dev/smd0 \
-    hw.tty.vtdevice=/dev/smd11 \
-    ril.subscription.types=NV,RUIM \
-    persist.radio.mode_pref_nv10=1 \
-    DEVICE_PROVISIONED=1 \
+   rild.libpath=/system/lib/libril-qc-qmi-1.so \
+   ril.subscription.types=NV,RUIM \
+   ro.telephony.call_ring.delay=3000 \
+   ro.telephony.ril.v3=skippinpukcount,qcomdsds \
+   persist.multisim.config=dsds \
+   persist.radio.multisim.config=dsds \
+   ro.multi.rild=true \
+   ro.telephony.default_network=3 \
+   ro.telephony.default_cdma_sub=0 \
+   ro.cdma.factory=china \
+   ro.cdma.subscribe_on_ruim_ready=true \
+   telephony.lteOnCdmaDevice=0 \
+   ro.telephony.call_ring.multiple=false \
+   ro.use_data_netmgrd=true \
+   persist.data_netmgrd_nint=16 \
+   persist.radio.apm_sim_not_pwdn=1
+
+PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.fmcv2support=1 \
     wlan.driver.ath=1 \
     debug.sf.hw=1 \
@@ -80,9 +83,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
    ro.sf.lcd_density=240 \
    dalvik.vm.heapgrowthlimit=48m \
    dalvik.vm.heapsize=128m \
-   com.qc.hardware=true \
-   dev.pm.dyn_sample_period=700000 \
-   dev.pm.dyn_samplingrate=1 \
    persist.sys.usb.config=mass_storage,adb \
    ro.vold.umsdirtyratio=50 \
    persist.webview.provider=classic \
@@ -109,7 +109,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Common properties
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.low_ram=true \
+    ro.config.low_ram=true
 
 #Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \

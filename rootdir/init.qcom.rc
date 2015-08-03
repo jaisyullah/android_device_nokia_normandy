@@ -92,6 +92,12 @@ on boot
     chown system audio /dev/i2c-1
     chmod 0660 /dev/i2c-1
 
+    chmod 0664 /dev/light
+    chmod 0664 /dev/proximity
+    chmod 0664 /dev/accel
+    chmod 0664 /dev/compass_aot
+    chmod 0664 /dev/akm8975_dev
+
     # Allow QMUX daemon to assign port open wait time
     chown radio radio /sys/devices/virtual/hsicctl/hsicctl0/modem_wait
 
@@ -233,6 +239,11 @@ on post-fs-data
     chmod 2770 /data/audio
 
     setprop vold.post_fs_data_done 1
+
+service akm8975 /system/bin/akmd8975
+    class main
+    disabled
+    oneshot
 
 on property:init.svc.surfaceflinger=stopped
     stop ppd
@@ -426,13 +437,6 @@ service dhcpcd_bnep3 /system/bin/dhcpcd -BKLG
     oneshot
 
 service dhcpcd_bnep4 /system/bin/dhcpcd -BKLG
-    disabled
-    oneshot
-
-service fm_dl /system/bin/sh /system/etc/init.qcom.fm.sh
-    class late_start
-    user root
-    group system qcom_oncrpc fm_radio
     disabled
     oneshot
 
