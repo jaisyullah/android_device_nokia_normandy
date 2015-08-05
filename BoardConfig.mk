@@ -187,13 +187,6 @@ TARGET_FORCE_CPU_UPLOAD := true
 # Assert
 TARGET_OTA_ASSERT_DEVICE := normandy,msm8625
 
-# Recovery
-TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/fstab.qcom
-BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun%d/file"
-BOARD_HAS_NO_SELECT_BUTTON := true
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-DEVICE_RESOLUTION := 480x800
-
 # Don't generate block mode update zips
 BLOCK_BASED_OTA := false
 
@@ -228,3 +221,14 @@ WIFI_TEST_INTERFACE         := "sta"
 WIFI_DRIVER_FW_PATH_STA     := "sta"
 WIFI_DRIVER_FW_PATH_AP      := "ap"
 WIFI_DRIVER_FW_PATH_P2P     := "p2p"
+
+# Recovery
+TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/twrp.fstab
+BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun%d/file"
+BOARD_HAS_NO_SELECT_BUTTON := true
+TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
+DEVICE_RESOLUTION := 480x800
+TW_FLASH_FROM_STORAGE := true
+TW_INTERNAL_STORAGE_PATH := "/sdcard1"
+TW_EXTERNAL_STORAGE_PATH := "/sdcard"
+TW_DEFAULT_EXTERNAL_STORAGE := true
