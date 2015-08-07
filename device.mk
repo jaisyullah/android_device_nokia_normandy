@@ -37,7 +37,7 @@ PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-PRODUCT_BOOT_JARS += qcmediaplayer
+#PRODUCT_BOOT_JARS += qcmediaplayer
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
@@ -192,7 +192,7 @@ PRODUCT_PACKAGES += \
     qcom.fmradio
 
 # qcmediaplayer
-PRODUCT_PACKAGES += qcmediaplayer
+#PRODUCT_PACKAGES += qcmediaplayer
 
 #llvm
 PRODUCT_PACKAGES += \
