@@ -12,27 +12,56 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
     dalvik.vm.image-dex2oat-Xms=48m \
     dalvik.vm.image-dex2oat-Xmx=48m
 
-#Nokia X configs
-
-# Qualcomm
+#7x27a configs
 PRODUCT_PROPERTY_OVERRIDES += \
-   rild.libpath=/system/lib/libril-qc-qmi-1.so \
-   ril.subscription.types=NV,RUIM \
-   ro.telephony.call_ring.delay=3000 \
-   ro.telephony.ril.v3=skippinpukcount,qcomdsds \
-   persist.multisim.config=dsds \
-   persist.radio.multisim.config=dsds \
-   ro.multi.rild=true \
-   ro.telephony.default_network=3 \
-   ro.telephony.default_cdma_sub=0 \
-   ro.cdma.factory=china \
-   ro.cdma.subscribe_on_ruim_ready=true \
-   telephony.lteOnCdmaDevice=0 \
-   ro.telephony.call_ring.multiple=false \
-   ro.use_data_netmgrd=true \
-   persist.data_netmgrd_nint=16 \
-   persist.radio.apm_sim_not_pwdn=1
+    headset.hook.delay=500
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.heapgrowthlimit=52m
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    com.qc.hardware=true \
+    dev.pm.dyn_sample_period=700000 \
+    dev.pm.dyn_samplingrate=1 \
+    ro.vendor.extension_library=/system/lib/libqc-opt.so \
+    gsm.version.baseband=1040 \
+    rild.libpath=/system/lib/libril-qc-1.so \
+    ro.telephony.ril.config=qcomdsds,skippinpukcount,signalstrength \
+    ro.telephony.ril_class=HuaweiRIL
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ril.subscription.types=NV,RUIM \
+    rild.libargs=-d/dev/smd0 \
+    ro.telephony.call_ring.delay=100 \
+    ro.telephony.call_ring.multiple=false
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vold.umsdirtyratio=50
+
+# Audio
+PRODUCT_PROPERTY_OVERRIDES += \
+    audio.gapless.playback.disable=true
+    
+# FM Radio
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.fm.analogpath.supported=false \
+    ro.fm.transmitter=false \
+    ro.fm.mulinst.recording.support=false
+
+# Stagefright
+PRODUCT_PROPERTY_OVERRIDES += \
+   media.stagefright.enable-player=true \
+   media.stagefright.enable-meta=false \
+   media.stagefright.enable-scan=true \
+   media.stagefright.enable-http=true \
+   media.stagefright.enable-fma2dp=true \
+   media.stagefright.enable-aac=true \
+   media.stagefright.enable-qcp=true
+
+PRODUCT_PROPERTY_OVERRIDES += \
+   mm.enable.smoothstreaming=true
+
+#Nokia X configs
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.fmcv2support=1 \
     wlan.driver.ath=1 \
@@ -43,13 +72,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.8x25.type=gpu \
     ro.sf.7x27A.lcd_density=240 \
     ro.sf.8x25.lcd_density=240 \
-    persist.gralloc.cp.level3=1 \
-    media.stagefright.enable-player=true \
-    media.stagefright.enable-http=true \
-    media.stagefright.enable-aac=true \
-    media.stagefright.enable-qcp=true \
-    media.stagefright.enable-fma2dp=true \
-    media.stagefright.enable-scan=true \
+    persist.gralloc.cp.level3=1
 
 #
 #for using emmc partition instead sdcard
@@ -67,8 +90,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
    persist.sys.dalvik.multithread=false \
    persist.sys.dun.override=0 \
    persist.sys.root_access=1 \
-   ro.fm.transmitter=false \
-   headset.hook.delay=500 \
    ro.bluetooth.remote.autoconnect=true \
    ro.bluetooth.request.master=true \
    ro.bt.bdaddr_path=/data/misc/bluedroid/bdaddr \
@@ -84,13 +105,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
    dalvik.vm.heapgrowthlimit=48m \
    dalvik.vm.heapsize=128m \
    persist.sys.usb.config=mass_storage,adb \
-   ro.vold.umsdirtyratio=50 \
    persist.webview.provider=classic \
    wifi.interface=wlan0 \
    wifi.supplicant_scan_interval=60 \
-   ro.carrier=unknown \
-   ro.ril.hsxpa=1 \
-   ro.ril.gprsclass=10 \
    ro.adb.qemud=1 \
    dalvik.vm.heapstartsize=5m \
    dalvik.vm.heaptargetutilization=0.25 \

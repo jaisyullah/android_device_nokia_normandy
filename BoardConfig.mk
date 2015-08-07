@@ -58,19 +58,15 @@ TARGET_KERNEL_SOURCE := kernel/nokia/normandy
 TARGET_KERNEL_CONFIG := normandy_selinux_defconfig
 KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
 
-#KERNEL_EXTERNAL_MODULES:
-#	mkdir -p $(KERNEL_MODULES_OUT)/ath6kl
-#	rm -rf $(TARGET_OUT_INTERMEDIATES)/compat
-#	cp -a device/nokia/normandy/compat $(TARGET_OUT_INTERMEDIATES)/
-#	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/compat KLIB=$(KERNEL_OUT) KLIB_BUILD=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" install-modules
-#	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
-#	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/compat/net/wireless/cfg80211.ko $(KERNEL_MODULES_OUT)/ath6kl/cfg80211.ko
-#	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/compat/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko $(KERNEL_MODULES_OUT)/ath6kl/ath6kl_core.ko
-#	ln -sf /system/lib/modules/ath6kl/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
 KERNEL_EXTERNAL_MODULES:
-	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
-	ln -sf /system/lib/modules/ath6kl/ath6kl_sdio.ko $(KERNEL_MODULES_OUT)/wlan.ko
-	cp device/nokia/normandy/nx/other/lib/modules/cfg80211.ko $(TARGET_OUT)/lib/modules
+	mkdir -p $(TARGET_ROOT_OUT)/wifi
+	rm -rf $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei
+	rm -f $(TARGET_OUT)/lib/cfg80211.ko
+	cp -a hardware/atheros/wifi/ath6kl-huawei $(TARGET_OUT_INTERMEDIATES)/
+	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/cfg80211 KERNEL_OUT=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" modules
+	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/ar6000 KERNEL_OUT=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" modules
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/cfg80211/cfg80211.ko $(TARGET_OUT)/lib/cfg80211.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/ar6000/ar6000.ko $(TARGET_OUT)/lib/ar6000.ko
 
 TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
@@ -162,11 +158,6 @@ BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
 # Lights
 #TARGET_PROVIDES_LIBLIGHT := true
 
-# Radio
-TARGET_NEEDS_NON_PIE_SUPPORT := true
-BOARD_PROVIDES_LIBRIL := true
-SIM_COUNT := 2
-
 # Sensors
 SOMC_CFG_SENSORS := true
 SOMC_CFG_SENSORS_COMPASS_AK8975 := yes
@@ -177,7 +168,7 @@ SOMC_CFG_SENSORS_LIGHT_AS3676_PATH := "/sys/devices/i2c-0/0-0040"
 include device/qcom/sepolicy/sepolicy.mk
 
 # RIL 
-#BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
+BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
 
 # Webkit
 ENABLE_WEBGL := true
@@ -202,25 +193,23 @@ MALLOC_IMPL := dlmalloc
 TARGET_BOOTANIMATION_TEXTURE_CACHE := false
 
 # WLAN
-BOARD_HAS_ATH_WLAN          := true
-BOARD_WLAN_DEVICE := ath6kl
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_ath6kl
-BOARD_HOSTAPD_DRIVER        := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_ath6kl
-WPA_SUPPLICANT_VERSION      := VER_0_8_X
-HOSTAPD_VERSION             := VER_0_8_X
+BOARD_HOSTAPD_DRIVER := NL80211
 TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
-WIFI_EXT_MODULE_PATH        := "/system/lib/modules/cfg80211.ko"
-WIFI_EXT_MODULE_NAME        := "cfg80211"
-WIFI_EXT_MODULE_ARG         := ""
-WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/ath6kl/ath6kl_sdio.ko"
-WIFI_DRIVER_MODULE_NAME     := "wlan"
-WIFI_DRIVER_MODULE_ARG      := ""
-WIFI_TEST_INTERFACE         := "sta"
-WIFI_DRIVER_FW_PATH_STA     := "sta"
-WIFI_DRIVER_FW_PATH_AP      := "ap"
-WIFI_DRIVER_FW_PATH_P2P     := "p2p"
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+
+BOARD_HAS_ATH_WLAN := true
+BOARD_WLAN_DEVICE := ath6kl
+
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
+
+WIFI_DRIVER_FW_PATH_AP := "ap"
+WIFI_DRIVER_FW_PATH_STA := "sta"
+WIFI_DRIVER_FW_PATH_P2P := "p2p"
+
+WIFI_DRIVER_MODULE_NAME := "ar6000"
+WIFI_DRIVER_MODULE_PATH := "/data/misc/wifi/load/ar6000.ko"
 
 # Recovery
 TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/twrp.fstab
