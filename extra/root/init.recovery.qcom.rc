@@ -1,0 +1,12 @@
+on init
+	export PATH /sbin
+	export LD_LIBRARY_PATH .:/sbin
+
+service console /sbin/sh
+	console
+	disabled
+	user shell
+	group log
+
+service rmt_storage /rmt_storage_recovery
+    user root

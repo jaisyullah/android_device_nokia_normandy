@@ -1,5 +1,11 @@
 TARGET_SPECIFIC_HEADER_PATH := device/nokia/normandy/include
 
+INSTALL_OLD_SENSORS := true
+INSTALL_QCOM_ROOT_SCRIPTS := true
+INSTALL_NOKIAX_MODULES := true
+INSTALL_ADDITIONAL_SCRIPTS := true
+INSTALL_ADDITIONAL_ETC := true
+
 # inherit from the proprietary version
 -include vendor/nokia/normandy/BoardConfigVendor.mk
 
@@ -30,11 +36,7 @@ TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp -mtune=cortex-a5
 COMMON_GLOBAL_CFLAGS += -DQCOM_DIRECTTRACK
 COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
-COMMON_GLOBAL_CFLAGS += -DQCOM_NO_SECURE_PLAYBACK
-COMMON_GLOBAL_CFLAGS += -DNO_UPDATE_PREVIEW
-COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB
 COMMON_GLOBAL_CFLAGS += -DQCOM_BSP_LEGACY
-COMMON_GLOBAL_CFLAGS += -DBOARD_CANT_REALLOCATE_OMX_BUFFERS
 
 # Qualcomm hardware
 COMMON_GLOBAL_CFLAGS += -DUSE_MDP3
@@ -57,16 +59,22 @@ WITH_ART_SMALL_MODE := true
 TARGET_KERNEL_SOURCE := kernel/nokia/normandy
 TARGET_KERNEL_CONFIG := normandy_selinux_defconfig
 KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
+	
+#KERNEL_EXTERNAL_MODULES:
+#	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
+#	rm $(KERNEL_MODULES_OUT)/librasdioif.ko
+#	ln -sf /system/lib/modules/ath6kl/ath6kl_sdio $(KERNEL_MODULES_OUT)/wlan.ko
+#	cp device/nokia/normandy/extra/modules/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
+#	cp device/nokia/normandy/extra/modules/librasdioif.ko $(KERNEL_MODULES_OUT)/librasdioif.ko
 
 KERNEL_EXTERNAL_MODULES:
-	mkdir -p $(TARGET_ROOT_OUT)/wifi
 	rm -rf $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei
-	rm -f $(TARGET_OUT)/lib/cfg80211.ko
 	cp -a hardware/atheros/wifi/ath6kl-huawei $(TARGET_OUT_INTERMEDIATES)/
+	rm $(KERNEL_MODULES_OUT)/cfg80211.ko
 	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/cfg80211 KERNEL_OUT=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" modules
 	$(MAKE) -C $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/ar6000 KERNEL_OUT=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" modules
-	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/cfg80211/cfg80211.ko $(TARGET_OUT)/lib/cfg80211.ko
-	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/ar6000/ar6000.ko $(TARGET_OUT)/lib/ar6000.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/cfg80211/cfg80211.ko $(KERNEL_MODULES_OUT)/cfg80211.ko
+	$(TARGET_OBJCOPY) --strip-unneeded $(TARGET_OUT_INTERMEDIATES)/ath6kl-huawei/ar6000/ar6000.ko $(KERNEL_MODULES_OUT)/ar6000.ko
 
 TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
@@ -83,7 +91,7 @@ BOARD_KERNEL_BCHECC_SPARESIZE := 160
 BOARD_KERNEL_2KSPARESIZE := 64
 
 TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
+#TARGET_USERIMAGES_USE_F2FS := true
 
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_USES_UNCOMPRESSED_KERNEL := false
@@ -120,8 +128,8 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/nokia/normandy/bluetooth
 
 # Camera
 COMMON_GLOBAL_CFLAGS += -DMR0_CAMERA_BLOB -DNEEDS_VECTORIMPL_SYMBOLS
-USE_DEVICE_SPECIFIC_CAMERA := true
-USE_CAMERA_STUB := true
+#USE_DEVICE_SPECIFIC_CAMERA := true
+#USE_CAMERA_STUB := true
 
 # audio 
 TARGET_QCOM_AUDIO_VARIANT := caf
@@ -132,7 +140,6 @@ TARGET_HAS_QACT := true
 AUDIO_FEATURE_ENABLED_FM := true
 
 # GPS
-TARGET_GPS_HAL_PATH := device/nokia/normandy/gps
 #BOARD_USES_QCOM_LIBRPC := true
 BOARD_USES_QCOM_GPS := true
 #BOARD_USES_QCOM_LIBS := true
@@ -158,17 +165,11 @@ BOARD_HARDWARE_CLASS := device/nokia/normandy/cmhw
 # Lights
 #TARGET_PROVIDES_LIBLIGHT := true
 
-# Sensors
-SOMC_CFG_SENSORS := true
-SOMC_CFG_SENSORS_COMPASS_AK8975 := yes
-SOMC_CFG_SENSORS_LIGHT_AS3676 := yes
-SOMC_CFG_SENSORS_LIGHT_AS3676_PATH := "/sys/devices/i2c-0/0-0040"
+# ril
+BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril
 
 # SELinux
-include device/qcom/sepolicy/sepolicy.mk
-
-# RIL 
-BOARD_RIL_CLASS := ../../../device/nokia/normandy/ril/
+#include device/qcom/sepolicy/sepolicy.mk
 
 # Webkit
 ENABLE_WEBGL := true
@@ -184,8 +185,14 @@ BLOCK_BASED_OTA := false
 # Enable Minikin text layout engine (will be the default soon)
 USE_MINIKIN := true
 
-WITH_DEXPREOPT := true
-#WITH_DEXPREOPT_PIC := true
+# Enable dex-preoptimization to speed up first boot sequence
+ifeq ($(HOST_OS),linux)
+  ifeq ($(TARGET_BUILD_VARIANT),userdebug)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+    endif
+  endif
+endif
 DONT_DEXPREOPT_PREBUILTS := true
 
 #low-ram
@@ -193,26 +200,30 @@ MALLOC_IMPL := dlmalloc
 TARGET_BOOTANIMATION_TEXTURE_CACHE := false
 
 # WLAN
-BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_HOSTAPD_DRIVER := NL80211
-TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
-WPA_SUPPLICANT_VERSION := VER_0_8_X
-
-BOARD_HAS_ATH_WLAN := true
+BOARD_HAS_ATH_WLAN          := true
 BOARD_WLAN_DEVICE := ath6kl
+TARGET_CUSTOM_WIFI := ../../device/nokia/normandy/libhardware_legacy/wifi/wifi.c
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_ath6kl
+BOARD_HOSTAPD_DRIVER        := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_ath6kl
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+HOSTAPD_VERSION             := VER_0_8_X
+WIFI_EXT_MODULE_PATH        := "/system/lib/modules/cfg80211.ko"
+WIFI_EXT_MODULE_NAME        := "cfg80211"
+WIFI_EXT_MODULE_ARG         := ""
+WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/ar6000.ko"
+WIFI_DRIVER_MODULE_NAME     := "ar6000"
+WIFI_DRIVER_MODULE_ARG      := ""
+WIFI_TEST_INTERFACE         := "sta"
+WIFI_DRIVER_FW_PATH_STA     := "sta"
+WIFI_DRIVER_FW_PATH_AP      := "ap"
+WIFI_DRIVER_FW_PATH_P2P     := "p2p"
 
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
-
-WIFI_DRIVER_FW_PATH_AP := "ap"
-WIFI_DRIVER_FW_PATH_STA := "sta"
-WIFI_DRIVER_FW_PATH_P2P := "p2p"
-
-WIFI_DRIVER_MODULE_NAME := "ar6000"
-WIFI_DRIVER_MODULE_PATH := "/data/misc/wifi/load/ar6000.ko"
 
 # Recovery
-TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/twrp.fstab
+TARGET_RECOVERY_INITRC := device/nokia/normandy/recovery/twrp-init.rc
+TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/fstab.qcom
 BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun%d/file"
 BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
@@ -221,3 +232,16 @@ TW_FLASH_FROM_STORAGE := true
 TW_INTERNAL_STORAGE_PATH := "/sdcard1"
 TW_EXTERNAL_STORAGE_PATH := "/sdcard"
 TW_DEFAULT_EXTERNAL_STORAGE := true
+HAVE_SELINUX := true
+
+#TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/fstab.qcom
+#BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun%d/file"
+#BOARD_HAS_NO_SELECT_BUTTON := true
+#TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
+#DEVICE_RESOLUTION := 480x800
+
+
+#Additional apps
+ADD_SlimFileManager := true
+ADD_SETUP_WIZARD := false
+ADD_CUSTOM_WEBVIEW := true

@@ -1,9 +1,3 @@
-$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
-
-# The gps config appropriate for this device
-$(call inherit-product, device/common/gps/gps_us_supl.mk)
-
-$(call inherit-product-if-exists, vendor/nokia/normandy/normandy-vendor.mk)
 
 DEVICE_PACKAGE_OVERLAYS += device/nokia/normandy/overlay
 
@@ -27,9 +21,9 @@ PRODUCT_DEVICE := normandy
 
 LOCAL_PATH := device/nokia/normandy
 
-PRODUCT_LOCALES := ar_EG
-PRODUCT_LOCALES += en_US
-PRODUCT_LOCALES += en_UK
+PRODUCT_LOCALES := en_US
+PRODUCT_LOCALES += ar_EG
+PRODUCT_LOCALES += sk_SK
 PRODUCT_LOCALES += fr_FR
 PRODUCT_LOCALES += hdpi
 PRODUCT_AAPT_CONFIG := normal hdpi
@@ -37,7 +31,7 @@ PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-#PRODUCT_BOOT_JARS += qcmediaplayer
+PRODUCT_BOOT_JARS += qcmediaplayer
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
@@ -166,6 +160,9 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf \
     wpa_supplicant
 
+PRODUCT_PACKAGES += \
+    camera.msm7x27a
+
 # Newer camera API isn't supported.
 PRODUCT_PROPERTY_OVERRIDES += \
    camera2.portability.force_api=1
@@ -192,7 +189,7 @@ PRODUCT_PACKAGES += \
     qcom.fmradio
 
 # qcmediaplayer
-#PRODUCT_PACKAGES += qcmediaplayer
+PRODUCT_PACKAGES += qcmediaplayer
 
 #llvm
 PRODUCT_PACKAGES += \
@@ -200,4 +197,29 @@ PRODUCT_PACKAGES += \
 
 #Additional
 PRODUCT_PACKAGES += \
-   radiooptions
+   libdvm
+
+PRODUCT_PACKAGES += \
+    libQWiFiSoftApCfg
+
+
+# Music
+PRODUCT_PACKAGES += \
+   Eleven
+
+# Teminal
+PRODUCT_PACKAGES += \
+   Terminal
+
+#Trebuchet
+PRODUCT_PACKAGES += \
+   Trebuchet
+
+#TWRP
+PRODUCT_COPY_FILES += device/nokia/normandy/recovery/twrp.fstab:recovery/root/etc/twrp.fstab
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+
+$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
+
+$(call inherit-product-if-exists, vendor/nokia/normandy/normandy-vendor.mk)

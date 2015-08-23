@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, The Android Open Source Project
+ * Copyright 2008, The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ static const char EXT_MODULE_PATH[] = WIFI_EXT_MODULE_PATH;
 #define WIFI_DRIVER_FW_PATH_PARAM	"/sys/module/wlan/parameters/fwpath"
 #endif
 
-static const char IFACE_DIR[]           = "/data/system/wpa_supplicant";
+static const char IFACE_DIR[]           = "";
 #ifdef WIFI_DRIVER_MODULE_PATH
 static const char DRIVER_MODULE_NAME[]  = WIFI_DRIVER_MODULE_NAME;
 static const char DRIVER_MODULE_TAG[]   = WIFI_DRIVER_MODULE_NAME " ";
@@ -848,10 +848,10 @@ int wifi_start_supplicant(int p2p_supported)
 #endif
 
 #ifdef WIFI_DRIVER_MODULE_PATH
-    /* The ath6kl driver needs the interface up in order to scan! */
+    /* The ar6k driver needs the interface up in order to scan! */
     if (!strncmp(DRIVER_MODULE_NAME, "ar6000", 6)) {
         ifc_init();
-        ifc_up("wlan");
+        ifc_up("wlan0");
         sleep(2);
     }
 #endif

@@ -23,17 +23,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     com.qc.hardware=true \
     dev.pm.dyn_sample_period=700000 \
     dev.pm.dyn_samplingrate=1 \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so \
-    gsm.version.baseband=1040 \
-    rild.libpath=/system/lib/libril-qc-1.so \
-    ro.telephony.ril.config=qcomdsds,skippinpukcount,signalstrength \
-    ro.telephony.ril_class=HuaweiRIL
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ril.subscription.types=NV,RUIM \
-    rild.libargs=-d/dev/smd0 \
-    ro.telephony.call_ring.delay=100 \
-    ro.telephony.call_ring.multiple=false
+    ro.vendor.extension_library=/system/lib/libqc-opt.so
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vold.umsdirtyratio=50
@@ -41,12 +31,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
     audio.gapless.playback.disable=true
-    
-# FM Radio
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.fm.analogpath.supported=false \
-    ro.fm.transmitter=false \
-    ro.fm.mulinst.recording.support=false
 
 # Stagefright
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -80,9 +64,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.emmcsdcard.enabled=1
 
-#
-# system props for SD card emulation of emmc partition
-#
 PRODUCT_PROPERTY_OVERRIDES += \
    ro.emmc.sdcard.partition=21 \
    ro.ksm.default=1 \
@@ -90,22 +71,16 @@ PRODUCT_PROPERTY_OVERRIDES += \
    persist.sys.dalvik.multithread=false \
    persist.sys.dun.override=0 \
    persist.sys.root_access=1 \
-   ro.bluetooth.remote.autoconnect=true \
-   ro.bluetooth.request.master=true \
    ro.bt.bdaddr_path=/data/misc/bluedroid/bdaddr \
    ro.qualcomm.bluetooth.dun=true \
-   ro.qualcomm.bluetooth.ftp=true \
-   ro.cwm.enable_key_repeat=true \
    debug.composition.type=dyn \
    debug.hwc.dynThreshold=1.9 \
    ro.bq.gpu_to_cpu_unsupported=1 \
    ro.max.fling_velocity=4000 \
-   ro.opengles.version=131072 \
    ro.sf.lcd_density=240 \
    dalvik.vm.heapgrowthlimit=48m \
    dalvik.vm.heapsize=128m \
    persist.sys.usb.config=mass_storage,adb \
-   persist.webview.provider=classic \
    wifi.interface=wlan0 \
    wifi.supplicant_scan_interval=60 \
    ro.adb.qemud=1 \
@@ -123,6 +98,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
    debug.gralloc.map_fb_memory=1 \
    debug.hwc.fakevsync=1 \
    persist.sys.usb.config=mtp,adb
+#   persist.webview.provider=classic
 
 # Common properties
 PRODUCT_PROPERTY_OVERRIDES += \
