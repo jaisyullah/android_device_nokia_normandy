@@ -209,8 +209,7 @@ TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/class/android_usb/android0/f_mass_stora
 
 
 # Recovery
-#TARGET_RECOVERY_FSTAB := device/nokia/normandy/twrp.fstab
-TARGET_RECOVERY_FSTAB := device/nokia/normandy/rootdir/fstab.qcom
+TARGET_RECOVERY_FSTAB := device/nokia/normandy/twrp.fstab
 BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun%d/file"
 BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
