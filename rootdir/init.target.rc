@@ -26,8 +26,6 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-on post-fs
-    exec /system/bin/sh /system/etc/init.qcom.thermald_conf.sh
 
 on init
     # framebuffer pls... :(
@@ -113,13 +111,6 @@ on early-init
     mkdir /storage/emmc 0000 system system
 
 service comp-set /system/bin/sh /system/etc/init.qcom.composition_type.sh
-    class late_start
-    user root
-    critical
-    disabled
-    oneshot
-
-service version-set /system/bin/sh /system/etc/init.target.8x25.sh
     class late_start
     user root
     critical
