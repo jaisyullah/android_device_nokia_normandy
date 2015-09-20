@@ -47,7 +47,7 @@ ARCH_ARM_HAVE_TLS_REGISTER := true
 
 #TARGET_PREBUILT_KERNEL := device/nokia/normandy/kernel
 TARGET_KERNEL_SOURCE := kernel/nokia/normandy
-TARGET_KERNEL_CONFIG := normandy_selinux_defconfig
+TARGET_KERNEL_CONFIG := cyanogenmod_normandy_defconfig
 KERNEL_TOOLCHAIN_PREFIX := arm-eabi-
 
 BOARD_HAS_NO_SELECT_BUTTON := true
