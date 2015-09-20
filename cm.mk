@@ -4,9 +4,6 @@ $(call inherit-product, vendor/slim/config/gsm.mk)
 # Release name
 PRODUCT_RELEASE_NAME := Normandy
 
-# Inherit some common SLIM stuff.
-$(call inherit-product, vendor/slim/config/common_full_phone.mk)
-
 # Inherit device configuration
 $(call inherit-product, device/nokia/normandy/device_normandy.mk)
 
@@ -15,7 +12,7 @@ TARGET_SCREEN_WIDTH := 480
 TARGET_SCREEN_HEIGHT := 800
 
 # Discard inherited values and use our own instead.
-PRODUCT_NAME := slim_normandy
+PRODUCT_NAME := cm_normandy
 PRODUCT_DEVICE := normandy
 PRODUCT_BRAND := NOKIA
 PRODUCT_MANUFACTURER := NOKIA
